@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-container {
+            padding: 2rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .form-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .tarefas-container {
+            padding: 2rem;
+        }
+        
+        .tarefas-container h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .tarefa-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        
+        .tarefa-item:hover {
+            background: #e9ecef;
+        }
+        
+        .tarefa-item.concluida {
+            opacity: 0.6;
+        }
+        
+        .tarefa-texto {
+            flex: 1;
+            font-size: 1rem;
+            color: #333;
+        }
+        
+        .tarefa-item.concluida .tarefa-texto {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+        
+        .btn-concluir, .btn-excluir {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 6px;
+        }
+        
+        .btn-concluir {
+            background: #28a745;
+        }
+        
+        .btn-concluir:hover {
+            background: #218838;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+        
+        .btn-excluir {
+            background: #dc3545;
+        }
+        
+        .btn-excluir:hover {
+            background: #c82333;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state p {
+            font-size: 1.125rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Lista de Tarefas</h1>
+            <p>Organize seu dia a dia</p>
+        </div>
+        
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('adicionar') }}" class="form-group">
+                <input 
+                    type="text" 
+                    name="texto" 
+                    placeholder="Digite uma nova tarefa..." 
+                    required
+                    autofocus
+                >
+                <button type="submit">Adicionar</button>
+            </form>
+        </div>
+        
+        <div class="tarefas-container">
+            <h2>Suas Tarefas</h2>
+            
+            {% if tarefas %}
+                {% for tarefa in tarefas %}
+                <div class="tarefa-item {% if tarefa.concluida %}concluida{% endif %}">
+                    <span class="tarefa-texto">{{ tarefa.texto }}</span>
+                    <form method="POST" action="{{ url_for('concluir', tarefa_id=tarefa.id) }}" style="display: inline;">
+                        <button type="submit" class="btn-concluir">
+                            {% if tarefa.concluida %}Desfazer{% else %}Concluir{% endif %}
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('excluir', tarefa_id=tarefa.id) }}" style="display: inline;">
+                        <button type="submit" class="btn-excluir">Excluir</button>
+                    </form>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>🎉 Nenhuma tarefa ainda!</p>
+                    <p>Adicione uma tarefa acima para começar.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
